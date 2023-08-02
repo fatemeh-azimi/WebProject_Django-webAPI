@@ -5,10 +5,10 @@ from .models import Post, Category, Comment, Tag
 # Register your models here.
 class PostAdmin(admin.ModelAdmin):
     model = Post
-    list_display = ['author', 'title', 'status', 'category', 'created_date', 'published_date']
+    list_display = ['author', 'title', 'status', 'category', 'tag', 'created_date', 'published_date']
     date_hierarchy = 'created_date'
     empty_value_display = '_empty_'
-    list_filter = ('author', 'status', 'category')
+    list_filter = ('author', 'status', 'category', 'tag')
     search_field = ['title', 'content']
 
 
