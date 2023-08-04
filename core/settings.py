@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'accounts',
 
     'rest_framework',
+    'django_filters',
+    
 ]
 
 MIDDLEWARE = [
@@ -150,3 +152,8 @@ REST_FRAMEWORK = {
     ]
 }
 '''
+
+# restframework settings
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS":"rest_framework.schemas.coreapi.AutoSchema"
+}

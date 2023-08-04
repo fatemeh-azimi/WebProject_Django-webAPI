@@ -44,7 +44,7 @@ class Post(models.Model):
         return self.title
     
     def get_snippet(self):
-        return self.content[0:100] + '...'
+        return self.content[0:10] + '...'
     
     def get_absolute_api_url(self):
         return reverse('blog:api-v1:post-detail', kwargs={'pk': self.pk})

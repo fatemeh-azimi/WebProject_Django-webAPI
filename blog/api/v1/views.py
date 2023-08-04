@@ -20,7 +20,6 @@ from .paginations import DefaultPagination
 
 
 
-
 # Example for Function Based View -->
 '''
 @api_view()
@@ -368,7 +367,7 @@ class PostModelViewSet(viewsets.ModelViewSet): # اگر احیانا دوبار�
     # queryset = Post.objects.filter(status=True)
     queryset = Post.objects.all()
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    # filterset_fields = ['category', 'author', 'status'] # اگر این فعال باشه کار نمیکنه ولی مال بخش فیلتر ها است.
+    filterset_fields = ['category', 'author', 'status'] # اگر این فعال باشه کار نمیکنه ولی مال بخش فیلتر ها است.
     # filterset_fields = {'category':['exact','in'], 'author':['exact'],'status':['exact']}
     search_fields = ['title', 'content']
     ordering_fields = ['published_date']

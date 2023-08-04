@@ -8,3 +8,5 @@ markdown
 django-filter
 
 
+coreapi
+django_filters
