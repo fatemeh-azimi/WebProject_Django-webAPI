@@ -1,16 +1,24 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import (IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser,)
-from .serializers import PostSerializer
-from ...models import Post
+from rest_framework.permissions import (IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, )#DjangoModelPermissions)
+from .serializers import PostSerializer, CategorySerializer
+from ...models import Post, Category #blog.models
 from rest_framework import status, mixins
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView
-from rest_framework.generics import RetrieveUpdateAPIView
-from rest_framework.generics import RetrieveDestroyAPIView
-from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (GenericAPIView, ListAPIView, ListCreateAPIView, 
+                                     RetrieveAPIView, RetrieveUpdateAPIView, RetrieveDestroyAPIView, 
+                                     RetrieveUpdateDestroyAPIView)
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework_role_filters.viewsets import RoleFilterModelViewSet
+from .role_filters import StaffRoleFilter, UserRoleFilter
+from .permissions import IsOwnerOrReadOnly, DjangoModelPermissions
+from .paginations import DefaultPagination
+
+
 
 
 # Example for Function Based View -->
@@ -92,6 +100,25 @@ class PostList(GenericAPIView):
         return Response(serializer.data)
 '''
 '''
+class PostList(GenericAPIView, mixins.ListModelMixin):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer #form kardan gesmat post or put
+    queryset = Post.objects.filter(status=True)
+
+    def get(self,request):
+        """retriveing a list of posts"""
+        queryset = self.get_queryset()
+        serializer = PostSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def post(self,request):
+        """creating a post with provided data"""
+        serializer = PostSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+'''
+'''
 class PostList(GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
@@ -103,6 +130,29 @@ class PostList(GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
     
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+'''
+'''
+class PostList(GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
+    """getting a list of posts and creating new posts"""
+    #permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer
+    # queryset = Post.objects.filter(status=True)
+    queryset = Post.objects.all()
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['category', 'author', 'status']
+    # filterset_fields = {'category':['exact','in'], 'author':['exact'],'status':['exact']}
+    search_fields = ['title', 'content']
+    ordering_fields = ['published_date']
+    pagination_class = DefaultPagination
+
+    def get(self, request, *args, **kwargs):
+        """returning a list of posts"""
+        permission_classes = [IsAuthenticatedOrReadOnly]
+        return self.list(request, permission_classes, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        permission_classes = [IsAdminUser]
+        return self.create(request, permission_classes, *args, **kwargs)
 '''
 '''
 class PostList(ListCreateAPIView):
@@ -295,10 +345,49 @@ class PostViewSet(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         pass
 '''
+'''
 # evry things for postList & postDtail ->
 class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
+'''
+'''
+class PostModelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True)
 
+    @action(methods=['get'], defult=False)
+    def get_ok(self, request):
+        return Response({"detail":"ok"})
+'''
+class PostModelViewSet(viewsets.ModelViewSet): # اگر احیانا دوباره کار نکرد، از دوتا کلاس بالاتر استفاده کن.
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]#, IsAdminUser, IsAuthenticatedOrReadOnly, DjangoModelPermissions ]
+    serializer_class = PostSerializer
+    # queryset = Post.objects.filter(status=True)
+    queryset = Post.objects.all()
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    # filterset_fields = ['category', 'author', 'status'] # اگر این فعال باشه کار نمیکنه ولی مال بخش فیلتر ها است.
+    # filterset_fields = {'category':['exact','in'], 'author':['exact'],'status':['exact']}
+    search_fields = ['title', 'content']
+    ordering_fields = ['published_date']
+    pagination_class = DefaultPagination
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    # for role_filters.py
+    # def get_role_id(self, request):
+    #     return request.user.role.role_id
+
+
+
+class CategoryModelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+    filter_backends = [SearchFilter]
+    search_fields = ['name']
+# <--  
 
