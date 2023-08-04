@@ -10,3 +10,4 @@ django-filter
 
 coreapi
 django_filters
+drf-yasg[validation]
