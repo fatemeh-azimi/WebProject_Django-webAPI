@@ -1,7 +1,15 @@
 from django.urls import path, include
 from . import views
+from rest_framework.routers import DefaultRouter
 
-app_name = "api-v1"
+app_name = 'api-v1'
+
+router = DefaultRouter()
+router.register("post", views.PostModelViewSet, basename="post")
+router.register("category", views.CategoryModelViewSet, basename="category")
+urlpatterns = router.urls
+
+
 
 urlpatterns = [
     # api with function -->
@@ -16,12 +24,9 @@ urlpatterns = [
     # path('post/',views.PostViewSet.as_view({'get':'list', 'post':'create'}), name="post-list"),
     # path('post/<int:pk>/',views.PostViewSet.as_view({'get':'retrieve', 'put':'update', 'patch':'partial_update', 'delete':'destroy'}), name="post-detail"),
 
-
-    path('post/',views.PostModelViewSet.as_view({'get':'list', 'post':'create'}), name="post-list"),
-    path('post/<int:pk>/',views.PostModelViewSet.as_view({'get':'retrieve', 'put':'update', 'patch':'partial_update', 'delete':'destroy'}), name="post-detail"),
+    ## path('post/',views.PostModelViewSet.as_view({'get':'list', 'post':'create'}), name="post-list"),
+    ## path('post/<int:pk>/',views.PostModelViewSet.as_view({'get':'retrieve', 'put':'update', 'patch':'partial_update', 'delete':'destroy'}), name="post-detail"),
     
-    path('category/',views.CategoryModelViewSet.as_view({'get':'list', 'post':'create'}), name="category-list"),
-    path('category/<int:pk>/',views.CategoryModelViewSet.as_view({'get':'retrieve', 'put':'update', 'patch':'partial_update', 'delete':'destroy'}), name="category-detail"),
-
-
+    ## path('category/',views.CategoryModelViewSet.as_view({'get':'list', 'post':'create'}), name="category-list"),
+    ## path('category/<int:pk>/',views.CategoryModelViewSet.as_view({'get':'retrieve', 'put':'update', 'patch':'partial_update', 'delete':'destroy'}), name="category-detail"),
 ]
