@@ -6,6 +6,8 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from django.http import HttpResponse
+
 
 
 schema_view = get_schema_view(
@@ -22,12 +24,18 @@ schema_view = get_schema_view(
 )
 
 
+def indexView(request):
+    return HttpResponse("<h1>Django Final Test</h1>")
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),    
     path('blog/', include('blog.urls')),
 
     path('api-auth/', include('rest_framework.urls')),
+
+    path("", indexView, name="index"),
 
     path('api-docs/', include_docs_urls(title='api sample')),
 

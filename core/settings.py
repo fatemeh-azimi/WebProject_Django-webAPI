@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
-
+    'mail_templated'
     
     
 ]
@@ -54,11 +54,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    #"corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -158,7 +160,31 @@ REST_FRAMEWORK = {
 }
 '''
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.permissions.IsAuthenticated", 
+    ]
+}
+
 # restframework settings
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS":"rest_framework.schemas.coreapi.AutoSchema"
 }
+
+
+
+# email configuration
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_USE_TLS = False
+# EMAIL_HOST = "smtp4dev"
+# EMAIL_HOST_USER = ""
+# EMAIL_HOST_PASSWORD = ""
+# EMAIL_PORT = 25
+
+CORS_ALLOW_ALL_ORIGINS = True
+
